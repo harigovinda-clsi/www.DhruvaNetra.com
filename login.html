@@ -71,12 +71,18 @@ button {
   font-size: 0.8rem;
   color: var(--muted);
 }
+
+.toggle a {
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: none;
+}
 </style>
 </head>
 
 <body>
   <div class="auth-box">
-    <h1>Login</h1>
+    <h1 id="title">Login</h1>
 
     <label>Email</label>
     <input id="email" type="email" placeholder="you@example.com" />
@@ -84,18 +90,27 @@ button {
     <label>Password</label>
     <input id="password" type="password" placeholder="••••••••" />
 
-   <button onclick="login()">Continue</button>
-
+    <button onclick="submitAuth()">Continue</button>
 
     <div class="toggle">
-      New here? Register | Forgot password
+      New here?
+      <a onclick="setMode('register')">Register</a>
+      &nbsp;|&nbsp;
+      <span>Forgot password</span>
     </div>
   </div>
 
-  <script>
+<script>
 const API_BASE = "https://backend-www-dhruvanetra-com.onrender.com";
+let MODE = "login"; // login | register
 
-async function login() {
+function setMode(mode) {
+  MODE = mode;
+  document.getElementById("title").textContent =
+    mode === "login" ? "Login" : "Create Account";
+}
+
+async function submitAuth() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -104,31 +119,29 @@ async function login() {
     return;
   }
 
+  const endpoint =
+    MODE === "login" ? "/api/auth/login" : "/api/auth/register";
+
   try {
-    const res = await fetch(`${API_BASE}/api/auth/login`, {
+    const res = await fetch(API_BASE + endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     });
 
-    if (!res.ok) {
-      throw new Error("Invalid credentials");
-    }
+    if (!res.ok) throw new Error("Auth failed");
 
     const data = await res.json();
-
-    // 🔑 Store token
     localStorage.setItem("token", data.access_token);
 
-    // ➜ Go to dashboard
     window.location.href = "dashboard.html";
-
   } catch (err) {
-    alert("Login failed. Check credentials.");
+    alert("Authentication failed");
   }
 }
 </script>
 
 </body>
 </html>
+
 
