@@ -141,7 +141,13 @@ async function submitAuth() {
 }
 </script>
 
+<script>
+if (localStorage.getItem("token")) {
+  window.location.href = "dashboard.html";
+}
+</script>
 </body>
 </html>
+
 
 
