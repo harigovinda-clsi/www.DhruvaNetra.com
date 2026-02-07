@@ -1030,39 +1030,24 @@ document.querySelector('.search-input').addEventListener('input', function(e) {
 </script>
 
 <script>
-(async () => {
-  try {
-    const asteroids = await apiGet("/api/asteroids/live");
+const API_BASE = "https://backend-www-dhruvanetra-com.onrender.com";
 
-    const tbody = document.querySelector(".data-table tbody");
-    tbody.innerHTML = "";
+function getToken() {
+  return localStorage.getItem("token");
+}
 
-    asteroids.forEach(a => {
-      const row = document.createElement("tr");
-      row.onclick = () =>
-        window.location.href = `object.html?id=${a.id}`;
-
-      row.innerHTML = `
-        <td class="object-name">${a.name || a.id}</td>
-        <td>${a.approach_date || "—"}</td>
-        <td class="velocity-cell">${a.velocity_kms || "—"} km/s</td>
-        <td class="distance-cell">${a.distance_au || "—"} AU</td>
-        <td>${a.diameter_m || "—"} m</td>
-        <td>
-          <span class="hazard-badge ${a.hazard ? "alert" : "safe"}">
-            ${a.hazard ? "Yes" : "No"}
-          </span>
-        </td>
-      `;
-      tbody.appendChild(row);
-    });
-
-  } catch (e) {
-    window.location.href = "login.html";
-  }
-})();
+async function apiGet(path) {
+  const res = await fetch(API_BASE + path, {
+    headers: {
+      "Authorization": `Bearer ${getToken()}`
+    }
+  });
+  if (!res.ok) throw new Error("Unauthorized");
+  return res.json();
+}
 </script>
 
 </body>
 
 </html>
+
