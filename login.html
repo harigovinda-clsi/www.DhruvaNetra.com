@@ -79,16 +79,56 @@ button {
     <h1>Login</h1>
 
     <label>Email</label>
-    <input type="email" placeholder="you@example.com" />
+    <input id="email" type="email" placeholder="you@example.com" />
 
     <label>Password</label>
-    <input type="password" placeholder="••••••••" />
+    <input id="password" type="password" placeholder="••••••••" />
 
-    <button>Continue</button>
+   <button onclick="login()">Continue</button>
+
 
     <div class="toggle">
       New here? Register | Forgot password
     </div>
   </div>
+
+  <script>
+const API_BASE = "https://backend-www-dhruvanetra-com.onrender.com";
+
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) {
+    alert("Please enter email and password");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (!res.ok) {
+      throw new Error("Invalid credentials");
+    }
+
+    const data = await res.json();
+
+    // 🔑 Store token
+    localStorage.setItem("token", data.access_token);
+
+    // ➜ Go to dashboard
+    window.location.href = "dashboard.html";
+
+  } catch (err) {
+    alert("Login failed. Check credentials.");
+  }
+}
+</script>
+
 </body>
 </html>
+
