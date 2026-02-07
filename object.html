@@ -939,6 +939,30 @@ document.querySelectorAll('.action-btn')[2].addEventListener('click', function()
   alert('Export functionality: CSV/JSON/XML formats available. This would trigger a download in the production version.');
 });
 </script>
+<script>
+(async () => {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
 
+    const data = await apiGet(`/api/asteroids/${id}`);
+
+    document.querySelector(".designation-title").textContent = data.name || id;
+
+    const badge = document.querySelector(".hazard-indicator");
+    badge.textContent = data.hazard ? "Potentially Hazardous" : "No Immediate Risk";
+    badge.className = "hazard-indicator " + (data.hazard ? "alert" : "safe");
+
+    document.querySelector(".object-summary").textContent =
+      data.summary || "Trajectory under continuous analysis.";
+
+  } catch {
+    window.location.href = "login.html";
+  }
+})();
+</script>
+
+   
 </body>
+
 </html>
