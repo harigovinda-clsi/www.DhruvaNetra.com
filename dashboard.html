@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mission Control · DhruvaNetra</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================================
+   CORE ARCHITECTURE
+========================================================= */
+
+:root {
+  --void: #08090c;
+  --depth-1: #0f1116;
+  --depth-2: #16181f;
+  --luminance: #e8eaed;
+  --dimmed: #989fac;
+  --orbit-line: #4a5568;
+  --signal: #5b9eff;
+  --alert-warm: #ff6b4a;
+  --caution: #fbbf24;
+  
+  --typeface-title: "Space Grotesk", system-ui, sans-serif;
+  --typeface-read: "Inter", system-ui, sans-serif;
+  --typeface-data: "IBM Plex Mono", monospace;
+  
+  --fluid-space-xs: clamp(0.5rem, 1vw, 0.75rem);
+  --fluid-space-s: clamp(0.875rem, 1.5vw, 1.25rem);
+  --fluid-space-m: clamp(1.25rem, 2.5vw, 2rem);
+  --fluid-space-l: clamp(2rem, 4vw, 3.5rem);
+  --fluid-space-xl: clamp(3rem, 6vw, 5rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--void);
+  color: var(--luminance);
+  font-family: var(--typeface-read);
+  line-height: 1.58;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* =========================================================
+   NAVIGATION RIBBON
+========================================================= */
+
+.nav-ribbon {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(15, 17, 22, 0.87);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--fluid-space-s) var(--fluid-space-m);
+  max-width: 1680px;
+  margin: 0 auto;
+}
+
+.wordmark {
+  font-family: var(--typeface-title);
+  font-weight: 600;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  letter-spacing: -0.02em;
+  color: var(--luminance);
+  text-decoration: none;
+}
+
+.nav-actions {
+  display: flex;
+  gap: var(--fluid-space-s);
+  align-items: center;
+}
+
+.mode-selector {
+  display: flex;
+  gap: 0.375rem;
+  padding: 0.25rem;
+  background: var(--depth-2);
+  border-radius: 6px;
+}
+
+.mode-selector button {
+  background: transparent;
+  border: none;
+  color: var(--dimmed);
+  padding: 0.4rem 0.7rem;
+  font-size: 0.72rem;
+  font-family: var(--typeface-data);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.mode-selector button:hover {
+  color: var(--luminance);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mode-selector button.active {
+  background: var(--signal);
+  color: var(--void);
+}
+
+.profile-trigger {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--signal), var(--caution));
+  border: 2px solid var(--depth-2);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.profile-trigger:hover {
+  transform: scale(1.08);
+}
+
+/* =========================================================
+   ASYMMETRICAL COMMAND GRID
+========================================================= */
+
+.command-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 2fr 1.1fr;
+  grid-template-rows: auto auto 1fr;
+  gap: var(--fluid-space-m);
+  padding: var(--fluid-space-l) var(--fluid-space-m);
+  max-width: 1680px;
+  margin: 0 auto;
+}
+
+/* =========================================================
+   STATUS PANEL (TOP LEFT)
+========================================================= */
+
+.status-panel {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  background: var(--depth-1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: var(--fluid-space-m);
+  border-radius: 8px;
+}
+
+.panel-label {
+  font-family: var(--typeface-data);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dimmed);
+  margin-bottom: var(--fluid-space-s);
+}
+
+.status-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fluid-space-m);
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: var(--fluid-space-xs);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.metric-key {
+  font-size: 0.88rem;
+  color: var(--dimmed);
+}
+
+.metric-value {
+  font-family: var(--typeface-data);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--luminance);
+}
+
+.pulse-indicator {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: var(--signal);
+  border-radius: 50%;
+  margin-left: 0.5rem;
+  animation: pulse-glow 2.3s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.92); }
+}
+
+/* =========================================================
+   WATCH LIST (CENTER TOP, SPANS WIDE)
+========================================================= */
+
+.watch-list {
+  grid-column: 2 / 4;
+  grid-row: 1 / 2;
+  background: var(--depth-1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: var(--fluid-space-m);
+  border-radius: 8px;
+}
+
+.watch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--fluid-space-m);
+}
+
+.watch-title {
+  font-family: var(--typeface-title);
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.add-watch-btn {
+  background: transparent;
+  border: 1px solid var(--orbit-line);
+  color: var(--dimmed);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.8rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: var(--typeface-read);
+  transition: all 0.2s ease;
+}
+
+.add-watch-btn:hover {
+  border-color: var(--signal);
+  color: var(--signal);
+}
+
+.watch-items {
+  display: flex;
+  gap: var(--fluid-space-s);
+  overflow-x: auto;
+  padding-bottom: var(--fluid-space-xs);
+  scrollbar-width: thin;
+  scrollbar-color: var(--orbit-line) transparent;
+}
+
+.watch-card {
+  min-width: 260px;
+  background: var(--depth-2);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 7px;
+  padding: var(--fluid-space-s);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.watch-card:hover {
+  border-color: var(--signal);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.watch-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: var(--fluid-space-xs);
+}
+
+.watch-name {
+  font-family: var(--typeface-title);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--luminance);
+}
+
+.hazard-badge {
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  font-family: var(--typeface-data);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.hazard-badge.alert {
+  background: rgba(255, 107, 74, 0.15);
+  color: var(--alert-warm);
+  border: 1px solid rgba(255, 107, 74, 0.3);
+}
+
+.hazard-badge.safe {
+  background: rgba(91, 158, 255, 0.12);
+  color: var(--signal);
+  border: 1px solid rgba(91, 158, 255, 0.25);
+}
+
+.watch-data {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-top: var(--fluid-space-s);
+}
+
+.watch-data-point {
+  display: flex;
+  flex-direction: column;
+}
+
+.data-label {
+  font-size: 0.68rem;
+  color: var(--dimmed);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--typeface-data);
+}
+
+.data-value {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--luminance);
+  margin-top: 0.2rem;
+}
+
+/* =========================================================
+   TRAJECTORY FEED (LEFT COLUMN, TALL)
+========================================================= */
+
+.trajectory-feed {
+  grid-column: 1 / 2;
+  grid-row: 2 / 4;
+  background: var(--depth-1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: var(--fluid-space-m);
+  border-radius: 8px;
+  max-height: 820px;
+  overflow-y: auto;
+}
+
+.feed-item {
+  padding: var(--fluid-space-s);
+  border-left: 2px solid var(--orbit-line);
+  margin-bottom: var(--fluid-space-s);
+  transition: border-color 0.2s ease;
+}
+
+.feed-item:hover {
+  border-left-color: var(--signal);
+}
+
+.feed-timestamp {
+  font-family: var(--typeface-data);
+  font-size: 0.7rem;
+  color: var(--dimmed);
+  margin-bottom: 0.4rem;
+}
+
+.feed-content {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--luminance);
+}
+
+.feed-meta {
+  font-size: 0.75rem;
+  color: var(--dimmed);
+  margin-top: 0.4rem;
+}
+
+/* =========================================================
+   LIVE DATA GRID (CENTER, LARGE)
+========================================================= */
+
+.live-data-grid {
+  grid-column: 2 / 3;
+  grid-row: 2 / 4;
+  background: var(--depth-1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.data-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--fluid-space-m);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--depth-2);
+}
+
+.filter-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filter-chip {
+  padding: 0.35rem 0.75rem;
+  background: transparent;
+  border: 1px solid var(--orbit-line);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: var(--dimmed);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--typeface-read);
+}
+
+.filter-chip:hover,
+.filter-chip.selected {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--void);
+}
+
+.search-input {
+  background: var(--void);
+  border: 1px solid var(--orbit-line);
+  border-radius: 5px;
+  padding: 0.5rem 0.9rem;
+  color: var(--luminance);
+  font-family: var(--typeface-read);
+  font-size: 0.85rem;
+  width: 220px;
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--signal);
+}
+
+.search-input::placeholder {
+  color: var(--dimmed);
+}
+
+.data-table-wrapper {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.data-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--depth-2);
+  z-index: 2;
+}
+
+.data-table th {
+  text-align: left;
+  padding: var(--fluid-space-s) var(--fluid-space-m);
+  font-family: var(--typeface-data);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dimmed);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.15s ease;
+  cursor: pointer;
+}
+
+.data-table tbody tr:hover {
+  background: rgba(91, 158, 255, 0.05);
+}
+
+.data-table td {
+  padding: var(--fluid-space-s) var(--fluid-space-m);
+  font-size: 0.88rem;
+}
+
+.object-name {
+  font-family: var(--typeface-title);
+  font-weight: 500;
+  color: var(--luminance);
+}
+
+.velocity-cell {
+  font-family: var(--typeface-data);
+  color: var(--caution);
+}
+
+.distance-cell {
+  font-family: var(--typeface-data);
+  color: var(--signal);
+}
+
+/* =========================================================
+   ALERT PANEL (RIGHT COLUMN)
+========================================================= */
+
+.alert-panel {
+  grid-column: 3 / 4;
+  grid-row: 2 / 3;
+  background: var(--depth-1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: var(--fluid-space-m);
+  border-radius: 8px;
+}
+
+.alert-item {
+  padding: var(--fluid-space-s);
+  background: var(--depth-2);
+  border-left: 3px solid var(--alert-warm);
+  margin-bottom: var(--fluid-space-s);
+  border-radius: 4px;
+}
+
+.alert-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--luminance);
+  margin-bottom: 0.3rem;
+}
+
+.alert-detail {
+  font-size: 0.75rem;
+  color: var(--dimmed);
+  line-height: 1.4;
+}
+
+/* =========================================================
+   INSIGHTS PANEL (RIGHT BOTTOM)
+========================================================= */
+
+.insights-panel {
+  grid-column: 3 / 4;
+  grid-row: 3 / 4;
+  background: var(--depth-1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: var(--fluid-space-m);
+  border-radius: 8px;
+}
+
+.insight-card {
+  padding: var(--fluid-space-s);
+  background: var(--depth-2);
+  border-radius: 6px;
+  margin-bottom: var(--fluid-space-s);
+}
+
+.insight-header {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--luminance);
+  margin-bottom: 0.4rem;
+}
+
+.insight-value {
+  font-family: var(--typeface-data);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--signal);
+  margin-bottom: 0.3rem;
+}
+
+.insight-change {
+  font-size: 0.72rem;
+  color: var(--dimmed);
+}
+
+/* =========================================================
+   RESPONSIVE COLLAPSE
+========================================================= */
+
+@media (max-width: 1280px) {
+  .command-grid {
+    grid-template-columns: 1fr 1.8fr;
+    grid-template-rows: auto auto auto auto;
+  }
+  
+  .watch-list {
+    grid-column: 1 / 3;
+    grid-row: 1 / 2;
+  }
+  
+  .status-panel {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+  }
+  
+  .alert-panel {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+  }
+  
+  .trajectory-feed {
+    grid-column: 1 / 2;
+    grid-row: 3 / 4;
+    max-height: 500px;
+  }
+  
+  .live-data-grid {
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
+  }
+  
+  .insights-panel {
+    grid-column: 1 / 3;
+    grid-row: 4 / 5;
+  }
+}
+
+@media (max-width: 768px) {
+  .command-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, auto);
+  }
+  
+  .watch-list,
+  .status-panel,
+  .trajectory-feed,
+  .live-data-grid,
+  .alert-panel,
+  .insights-panel {
+    grid-column: 1 / 2;
+  }
+  
+  .watch-list { grid-row: 1 / 2; }
+  .status-panel { grid-row: 2 / 3; }
+  .alert-panel { grid-row: 3 / 4; }
+  .live-data-grid { grid-row: 4 / 5; }
+  .trajectory-feed { grid-row: 5 / 6; max-height: 400px; }
+  .insights-panel { grid-row: 6 / 7; }
+  
+  .nav-actions {
+    gap: 0.5rem;
+  }
+  
+  .mode-selector button {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.65rem;
+  }
+  
+  .watch-items {
+    flex-direction: column;
+  }
+  
+  .watch-card {
+    min-width: 100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<nav class="nav-ribbon">
+  <div class="nav-inner">
+    <a href="index.html" class="wordmark">DhruvaNetra</a>
+    <div class="nav-actions">
+      <div class="mode-selector">
+        <button class="active">Observatory</button>
+        <button>Chronicle</button>
+        <button>Alert</button>
+      </div>
+      <div class="profile-trigger"></div>
+    </div>
+  </div>
+</nav>
+
+<div class="command-grid">
+  
+  <!-- STATUS PANEL -->
+  <section class="status-panel">
+    <div class="panel-label">System Status</div>
+    <div class="status-metrics">
+      <div class="metric-row">
+        <span class="metric-key">Feed Status</span>
+        <span class="metric-value">Active<span class="pulse-indicator"></span></span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-key">Objects Tracked</span>
+        <span class="metric-value">1,247</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-key">Close Approaches</span>
+        <span class="metric-value">18</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-key">Hazardous</span>
+        <span class="metric-value">3</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-key">Last Update</span>
+        <span class="metric-value">2m ago</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- WATCH LIST -->
+  <section class="watch-list">
+    <div class="watch-header">
+      <h2 class="watch-title">Your Watch List</h2>
+      <button class="add-watch-btn">+ Add Object</button>
+    </div>
+    <div class="watch-items">
+      <div class="watch-card">
+        <div class="watch-card-header">
+          <span class="watch-name">2024 MX1</span>
+          <span class="hazard-badge alert">Hazard</span>
+        </div>
+        <div class="watch-data">
+          <div class="watch-data-point">
+            <span class="data-label">Velocity</span>
+            <span class="data-value">24.3 km/s</span>
+          </div>
+          <div class="watch-data-point">
+            <span class="data-label">Miss Distance</span>
+            <span class="data-value">0.047 AU</span>
+          </div>
+          <div class="watch-data-point">
+            <span class="data-label">Diameter</span>
+            <span class="data-value">~340 m</span>
+          </div>
+          <div class="watch-data-point">
+            <span class="data-label">Approach</span>
+            <span class="data-value">Feb 14</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="watch-card">
+        <div class="watch-card-header">
+          <span class="watch-name">2023 DW</span>
+          <span class="hazard-badge safe">Safe</span>
+        </div>
+        <div class="watch-data">
+          <div class="watch-data-point">
+            <span class="data-label">Velocity</span>
+            <span class="data-value">18.7 km/s</span>
+          </div>
+          <div class="watch-data-point">
+            <span class="data-label">Miss Distance</span>
+            <span class="data-value">0.134 AU</span>
+          </div>
+          <div class="watch-data-point">
+            <span class="data-label">Diameter</span>
+            <span class="data-value">~120 m</span>
+          </div>
+          <div class="watch-data-point">
+            <span class="data-label">Approach</span>
+            <span class="data-value">Feb 19</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="watch-card">
+        <div class="watch-card-header">
+          <span class="watch-name">433 Eros</span>
+          <span class="hazard-badge safe">Safe</span>
+        </div>
+        <div class="watch-data">
+          <div class="watch-data-point">
+            <span class="data-label">Velocity</span>
+            <span class="data-value">7.4 km/s</span>
+          </div>
+          <div class="watch-data-point">
+            <span class="data-label">Miss Distance</span>
+            <span class="data-value">1.28 AU</span>
+          </div>
+          <div class="watch-data-point">
+            <span class="data-label">Diameter</span>
+            <span class="data-value">~16.8 km</span>
+          </div>
+          <div class="watch-data-point">
+            <span class="data-label">Approach</span>
+            <span class="data-value">Mar 02</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRAJECTORY FEED -->
+  <aside class="trajectory-feed">
+    <div class="panel-label">Trajectory Log</div>
+    <div class="feed-item">
+      <div class="feed-timestamp">14:23:18 UTC</div>
+      <div class="feed-content">Object 2024 MX1 trajectory updated. Closest approach recalculated.</div>
+      <div class="feed-meta">Miss distance: 0.047 AU • Confidence: 98.7%</div>
+    </div>
+    <div class="feed-item">
+      <div class="feed-timestamp">13:58:42 UTC</div>
+      <div class="feed-content">New object detected: 2026 BF3. Initial orbit determination in progress.</div>
+      <div class="feed-meta">Estimated diameter: 80-180m</div>
+    </div>
+    <div class="feed-item">
+      <div class="feed-timestamp">13:12:09 UTC</div>
+      <div class="feed-content">Object 2023 DW passed closest approach point.</div>
+      <div class="feed-meta">Actual distance: 0.134 AU • No deviation from prediction</div>
+    </div>
+    <div class="feed-item">
+      <div class="feed-timestamp">12:47:33 UTC</div>
+      <div class="feed-content">Risk assessment completed for 2025 QP7. Hazardous classification confirmed.</div>
+      <div class="feed-meta">Torino Scale: 1 • Next review: 48h</div>
+    </div>
+    <div class="feed-item">
+      <div class="feed-timestamp">11:29:15 UTC</div>
+      <div class="feed-content">Data feed synchronization with JPL completed successfully.</div>
+      <div class="feed-meta">Objects updated: 1,247 • Processing time: 3.2s</div>
+    </div>
+    <div class="feed-item">
+      <div class="feed-timestamp">10:18:56 UTC</div>
+      <div class="feed-content">Orbital elements refined for 99942 Apophis based on new observations.</div>
+      <div class="feed-meta">Impact probability: 0% • 2029 approach: 31,600 km</div>
+    </div>
+  </aside>
+
+  <!-- LIVE DATA GRID -->
+  <section class="live-data-grid">
+    <div class="data-controls">
+      <div class="filter-group">
+        <button class="filter-chip selected">All</button>
+        <button class="filter-chip">Hazardous</button>
+        <button class="filter-chip">Close Approach</button>
+        <button class="filter-chip">Large</button>
+      </div>
+      <input type="text" class="search-input" placeholder="Search by designation...">
+    </div>
+    <div class="data-table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Designation</th>
+            <th>Approach Date</th>
+            <th>Velocity</th>
+            <th>Miss Distance</th>
+            <th>Diameter</th>
+            <th>Hazard</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr onclick="window.location.href='object.html'">
+            <td class="object-name">2024 MX1</td>
+            <td>2026-02-14</td>
+            <td class="velocity-cell">24.3 km/s</td>
+            <td class="distance-cell">0.047 AU</td>
+            <td>340 m</td>
+            <td><span class="hazard-badge alert">Yes</span></td>
+          </tr>
+          <tr onclick="window.location.href='object.html'">
+            <td class="object-name">2023 DW</td>
+            <td>2026-02-19</td>
+            <td class="velocity-cell">18.7 km/s</td>
+            <td class="distance-cell">0.134 AU</td>
+            <td>120 m</td>
+            <td><span class="hazard-badge safe">No</span></td>
+          </tr>
+          <tr>
+            <td class="object-name">2025 QP7</td>
+            <td>2026-03-02</td>
+            <td class="velocity-cell">31.2 km/s</td>
+            <td class="distance-cell">0.089 AU</td>
+            <td>450 m</td>
+            <td><span class="hazard-badge alert">Yes</span></td>
+          </tr>
+          <tr>
+            <td class="object-name">433 Eros</td>
+            <td>2026-03-02</td>
+            <td class="velocity-cell">7.4 km/s</td>
+            <td class="distance-cell">1.28 AU</td>
+            <td>16.8 km</td>
+            <td><span class="hazard-badge safe">No</span></td>
+          </tr>
+          <tr>
+            <td class="object-name">2026 BF3</td>
+            <td>2026-03-11</td>
+            <td class="velocity-cell">22.8 km/s</td>
+            <td class="distance-cell">0.201 AU</td>
+            <td>130 m</td>
+            <td><span class="hazard-badge safe">No</span></td>
+          </tr>
+          <tr>
+            <td class="object-name">2024 PN1</td>
+            <td>2026-03-18</td>
+            <td class="velocity-cell">19.4 km/s</td>
+            <td class="distance-cell">0.112 AU</td>
+            <td>280 m</td>
+            <td><span class="hazard-badge safe">No</span></td>
+          </tr>
+          <tr>
+            <td class="object-name">2025 HJ9</td>
+            <td>2026-03-24</td>
+            <td class="velocity-cell">27.6 km/s</td>
+            <td class="distance-cell">0.063 AU</td>
+            <td>390 m</td>
+            <td><span class="hazard-badge alert">Yes</span></td>
+          </tr>
+          <tr>
+            <td class="object-name">1566 Icarus</td>
+            <td>2026-04-07</td>
+            <td class="velocity-cell">12.3 km/s</td>
+            <td class="distance-cell">0.845 AU</td>
+            <td>1.4 km</td>
+            <td><span class="hazard-badge safe">No</span></td>
+          </tr>
+          <tr>
+            <td class="object-name">2024 RG4</td>
+            <td>2026-04-15</td>
+            <td class="velocity-cell">21.7 km/s</td>
+            <td class="distance-cell">0.156 AU</td>
+            <td>210 m</td>
+            <td><span class="hazard-badge safe">No</span></td>
+          </tr>
+          <tr>
+            <td class="object-name">2023 NT8</td>
+            <td>2026-04-22</td>
+            <td class="velocity-cell">29.1 km/s</td>
+            <td class="distance-cell">0.078 AU</td>
+            <td>520 m</td>
+            <td><span class="hazard-badge alert">Yes</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ALERT PANEL -->
+  <aside class="alert-panel">
+    <div class="panel-label">Priority Alerts</div>
+    <div class="alert-item">
+      <div class="alert-title">2024 MX1 • Close Approach</div>
+      <div class="alert-detail">Approaching within 0.05 AU in 7 days. Monitoring trajectory refinements.</div>
+    </div>
+    <div class="alert-item">
+      <div class="alert-title">2025 QP7 • Updated Risk</div>
+      <div class="alert-detail">Risk classification elevated to Torino Scale 1 after orbit determination.</div>
+    </div>
+    <div class="alert-item">
+      <div class="alert-title">System Maintenance</div>
+      <div class="alert-detail">Scheduled data pipeline maintenance on Feb 10, 02:00-04:00 UTC.</div>
+    </div>
+  </aside>
+
+  <!-- INSIGHTS PANEL -->
+  <aside class="insights-panel">
+    <div class="panel-label">Analytics</div>
+    <div class="insight-card">
+      <div class="insight-header">Objects This Week</div>
+      <div class="insight-value">247</div>
+      <div class="insight-change">↑ 12% from last week</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-header">Average Miss Distance</div>
+      <div class="insight-value">0.28 AU</div>
+      <div class="insight-change">Within normal range</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-header">Detection Efficiency</div>
+      <div class="insight-value">97.3%</div>
+      <div class="insight-change">↑ 0.8% this month</div>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+// Theme switching
+document.querySelectorAll('.mode-selector button').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.mode-selector button').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    
+    const theme = this.textContent.toLowerCase();
+    if (theme === 'chronicle') {
+      document.documentElement.style.setProperty('--void', '#0e0a14');
+      document.documentElement.style.setProperty('--signal', '#f5c542');
+    } else if (theme === 'alert') {
+      document.documentElement.style.setProperty('--void', '#0a0a0a');
+      document.documentElement.style.setProperty('--signal', '#ff4d4d');
+    } else {
+      document.documentElement.style.setProperty('--void', '#08090c');
+      document.documentElement.style.setProperty('--signal', '#5b9eff');
+    }
+  });
+});
+
+// Filter chips
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', function() {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('selected'));
+    this.classList.add('selected');
+  });
+});
+
+// Search functionality
+document.querySelector('.search-input').addEventListener('input', function(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  document.querySelectorAll('.data-table tbody tr').forEach(row => {
+    const designation = row.querySelector('.object-name').textContent.toLowerCase();
+    row.style.display = designation.includes(searchTerm) ? '' : 'none';
+  });
+});
+</script>
+
+</body>
+</html>

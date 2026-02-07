@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DhruvaNetra · The steady eye on near-Earth space. Tracking motion across time</title>
+
+<!-- Recommended Typography Stack -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================================
+   THEME VARIABLES
+========================================================= */
+
+:root {
+  --bg: #0b0e14;
+  --fg: #e6e8eb;
+  --muted: #9aa4b2;
+  --accent: #6ea8fe;
+
+  --heading: "Space Grotesk", system-ui, sans-serif;
+  --body: "Inter", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", monospace;
+}
+
+[data-theme="retro"] {
+  --bg: #0e0a14;
+  --fg: #f2e9ff;
+  --muted: #b9a7d6;
+  --accent: #f5c542;
+}
+
+[data-theme="alert"] {
+  --bg: #0a0a0a;
+  --fg: #ffffff;
+  --muted: #b0b0b0;
+  --accent: #ff4d4d;
+}
+
+/* =========================================================
+   BASE RESET
+========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  line-height: 1.6;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* =========================================================
+   THEME SWITCHER
+========================================================= */
+
+.theme-switcher {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.theme-switcher button {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: var(--mono);
+}
+
+.theme-switcher button:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* =========================================================
+   HERO (ASYMMETRICAL)
+========================================================= */
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(1rem,1fr) 2fr 1.2fr minmax(1rem,1fr);
+  padding: clamp(3rem,6vw,6rem) 0;
+  align-items: center;
+}
+
+.hero-text {
+  grid-column: 2 / 3;
+  padding-right: 3rem;
+}
+
+.hero h1 {
+  font-family: var(--heading);
+  font-weight: 600;
+  font-size: clamp(2.3rem,4vw,3.6rem);
+  line-height: 1.15;
+}
+
+.hero p {
+  max-width: 42ch;
+  color: var(--muted);
+}
+
+.hero-aside {
+  grid-column: 3 / 4;
+  display: grid;
+  gap: 2rem;
+}
+
+.metric {
+  border-left: 2px solid var(--accent);
+  padding-left: 1rem;
+}
+
+.metric strong {
+  display: block;
+  font-family: var(--mono);
+  font-size: clamp(1.4rem,2.5vw,2rem);
+}
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+main {
+  padding: clamp(3rem,6vw,5rem) clamp(1.5rem,6vw,8rem);
+}
+
+section {
+  max-width: 70ch;
+  margin-bottom: 4rem;
+}
+
+section h2 {
+  font-family: var(--heading);
+  font-weight: 500;
+  font-size: clamp(1.6rem,3vw,2.2rem);
+}
+
+/* =========================================================
+   FEATURES
+========================================================= */
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap: 3rem;
+}
+
+.features article {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 1rem;
+}
+
+.features h3 {
+  font-family: var(--heading);
+  font-weight: 500;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+  padding: 3rem clamp(1.5rem,6vw,8rem);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding-inline: clamp(1.5rem,6vw,3rem);
+  }
+  .hero-text {
+    padding-right: 0;
+  }
+}
+</style>
+</head>
+
+<body data-theme="default">
+
+<div class="theme-switcher">
+  <button onclick="setTheme('default')">Observatory</button>
+  <button onclick="setTheme('retro')">Chronicle</button>
+  <button onclick="setTheme('alert')">Alert</button>
+</div>
+
+<header class="hero">
+  <div class="hero-text">
+    <h1>DhruvaNetra</h1>
+    <p>
+      The steady eye on near-Earth space
+A system for continuous observation of near-Earth objects.
+Focused on trajectories, proximity, and measurable risk.
+Built to inform early, without exaggeration or noise.
+    </p>
+  </div>
+
+  <div class="hero-aside">
+    <div class="metric">
+      <strong>LIVE</strong>
+      NASA-sourced trajectories
+    </div>
+    <div class="metric">
+      <strong>RISK</strong>
+      Proximity & velocity
+    </div>
+  </div>
+</header>
+
+<main>
+  <section>
+    <h2>Why This Platform Exists</h2>
+    <p>
+      Near-Earth space is never still.
+Most motion is inconsequential.
+Some trajectories require clarity rather than alarm.
+This platform was built to provide that clarity.
+    </p>
+  </section>
+
+  <section class="features">
+    <article>
+      <h3>Observe</h3>
+      <p>Continuous tracking without urgency.</p>
+    </article>
+    <article>
+      <h3>Interpret</h3>
+      <p>Assessment grounded in proportion and physics.</p>
+    </article>
+    <article>
+      <h3>Prepare</h3>
+      <p>Preparedness begins with understanding. Clear awareness enables timely, reasoned response.</p>
+    </article>
+  </section>
+</main>
+
+<footer>
+  Designed for learning, clarity, and responsible space awareness. (©)SHREYAS MISHRA - for PRAVAAH IIT BBS 2026
+</footer>
+
+<script>
+function setTheme(name) {
+  document.body.setAttribute("data-theme", name);
+}
+</script>
+
+</body>
+</html>

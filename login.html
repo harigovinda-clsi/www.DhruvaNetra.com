@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login · Cosmic Watch</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0b0e14;
+  --fg: #e6e8eb;
+  --muted: #9aa4b2;
+  --accent: #6ea8fe;
+
+  --heading: "Space Grotesk", sans-serif;
+  --body: "Inter", sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+}
+
+.auth-box {
+  width: min(380px, 90%);
+}
+
+h1 {
+  font-family: var(--heading);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: var(--fg);
+}
+
+button {
+  width: 100%;
+  padding: 0.6rem;
+  background: var(--accent);
+  border: none;
+  color: #000;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.toggle {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+</style>
+</head>
+
+<body>
+  <div class="auth-box">
+    <h1>Login</h1>
+
+    <label>Email</label>
+    <input type="email" placeholder="you@example.com" />
+
+    <label>Password</label>
+    <input type="password" placeholder="••••••••" />
+
+    <button>Continue</button>
+
+    <div class="toggle">
+      New here? Register | Forgot password
+    </div>
+  </div>
+</body>
+</html>

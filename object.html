@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Object 2024 MX1 · DhruvaNetra</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================================
+   FOUNDATION
+========================================================= */
+
+:root {
+  --void: #08090c;
+  --depth-1: #0f1116;
+  --depth-2: #16181f;
+  --luminance: #e8eaed;
+  --dimmed: #989fac;
+  --orbit-line: #4a5568;
+  --signal: #5b9eff;
+  --alert-warm: #ff6b4a;
+  --caution: #fbbf24;
+  --success: #34d399;
+  
+  --typeface-title: "Space Grotesk", system-ui, sans-serif;
+  --typeface-read: "Inter", system-ui, sans-serif;
+  --typeface-data: "IBM Plex Mono", monospace;
+  
+  --space-xs: clamp(0.5rem, 1vw, 0.75rem);
+  --space-s: clamp(0.875rem, 1.5vw, 1.25rem);
+  --space-m: clamp(1.25rem, 2.5vw, 2rem);
+  --space-l: clamp(2rem, 4vw, 3.5rem);
+  --space-xl: clamp(3rem, 6vw, 5rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--void);
+  color: var(--luminance);
+  font-family: var(--typeface-read);
+  line-height: 1.58;
+  min-height: 100vh;
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.nav-ribbon {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(15, 17, 22, 0.87);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-s) var(--space-m);
+  max-width: 1680px;
+  margin: 0 auto;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  color: var(--dimmed);
+}
+
+.breadcrumb a {
+  color: var(--dimmed);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb a:hover {
+  color: var(--signal);
+}
+
+.breadcrumb-separator {
+  color: var(--orbit-line);
+}
+
+.current-object {
+  font-family: var(--typeface-title);
+  font-weight: 500;
+  color: var(--luminance);
+}
+
+.back-link {
+  padding: 0.45rem 0.9rem;
+  background: transparent;
+  border: 1px solid var(--orbit-line);
+  border-radius: 5px;
+  color: var(--dimmed);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.back-link:hover {
+  border-color: var(--signal);
+  color: var(--signal);
+}
+
+/* =========================================================
+   OBJECT HERO (DIAGONAL SPLIT)
+========================================================= */
+
+.object-hero {
+  position: relative;
+  padding: var(--space-xl) var(--space-m);
+  max-width: 1680px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: var(--space-l);
+  align-items: start;
+}
+
+.hero-primary {
+  position: relative;
+  z-index: 2;
+}
+
+.designation-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  margin-bottom: var(--space-m);
+}
+
+.designation-title {
+  font-family: var(--typeface-title);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--luminance);
+}
+
+.hazard-indicator {
+  padding: 0.5rem 1.1rem;
+  border-radius: 6px;
+  font-family: var(--typeface-data);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.hazard-indicator.alert {
+  background: rgba(255, 107, 74, 0.15);
+  color: var(--alert-warm);
+  border: 1px solid rgba(255, 107, 74, 0.35);
+}
+
+.hazard-indicator.safe {
+  background: rgba(52, 211, 153, 0.12);
+  color: var(--success);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.object-summary {
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  line-height: 1.7;
+  color: var(--dimmed);
+  max-width: 56ch;
+  margin-bottom: var(--space-l);
+}
+
+.quick-actions {
+  display: flex;
+  gap: var(--space-s);
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 0.7rem 1.5rem;
+  border: 1px solid var(--orbit-line);
+  border-radius: 6px;
+  background: var(--depth-2);
+  color: var(--luminance);
+  font-family: var(--typeface-read);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-btn:hover {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--void);
+  transform: translateY(-1px);
+}
+
+.action-btn.primary {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--void);
+}
+
+.action-btn.primary:hover {
+  background: transparent;
+  color: var(--signal);
+}
+
+.hero-aside {
+  background: var(--depth-1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: var(--space-m);
+  position: sticky;
+  top: calc(var(--space-xl) + 60px);
+}
+
+.aside-label {
+  font-family: var(--typeface-data);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dimmed);
+  margin-bottom: var(--space-m);
+}
+
+.critical-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+}
+
+.metric-display {
+  padding-bottom: var(--space-s);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.metric-display:last-child {
+  border-bottom: none;
+}
+
+.metric-label {
+  font-size: 0.82rem;
+  color: var(--dimmed);
+  margin-bottom: 0.4rem;
+}
+
+.metric-primary {
+  font-family: var(--typeface-data);
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+  font-weight: 500;
+  color: var(--luminance);
+  line-height: 1.2;
+}
+
+.metric-secondary {
+  font-size: 0.75rem;
+  color: var(--dimmed);
+  margin-top: 0.3rem;
+}
+
+/* =========================================================
+   CONTENT SECTIONS (STAGGERED)
+========================================================= */
+
+.content-wrapper {
+  max-width: 1680px;
+  margin: 0 auto;
+  padding: var(--space-l) var(--space-m);
+}
+
+.section-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-l);
+  margin-bottom: var(--space-l);
+}
+
+.content-section {
+  background: var(--depth-1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: var(--space-m);
+}
+
+.content-section.wide {
+  grid-column: 1 / -1;
+}
+
+.content-section.offset {
+  transform: translateY(var(--space-m));
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-m);
+  padding-bottom: var(--space-s);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.section-title {
+  font-family: var(--typeface-title);
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--luminance);
+}
+
+.section-badge {
+  font-family: var(--typeface-data);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--dimmed);
+  padding: 0.3rem 0.7rem;
+  background: var(--depth-2);
+  border-radius: 4px;
+}
+
+/* =========================================================
+   ORBITAL PARAMETERS TABLE
+========================================================= */
+
+.param-table {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-s);
+}
+
+.param-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.param-name {
+  font-size: 0.88rem;
+  color: var(--dimmed);
+}
+
+.param-value {
+  font-family: var(--typeface-data);
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--luminance);
+}
+
+/* =========================================================
+   APPROACH TIMELINE
+========================================================= */
+
+.timeline {
+  position: relative;
+  padding-left: var(--space-m);
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--signal), transparent);
+}
+
+.timeline-event {
+  position: relative;
+  padding-bottom: var(--space-m);
+  margin-bottom: var(--space-m);
+}
+
+.timeline-event::before {
+  content: '';
+  position: absolute;
+  left: calc(-1 * var(--space-m) - 4px);
+  top: 0.3rem;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--signal);
+  border: 2px solid var(--void);
+}
+
+.timeline-event.past::before {
+  background: var(--orbit-line);
+}
+
+.timeline-event.current::before {
+  background: var(--alert-warm);
+  box-shadow: 0 0 12px rgba(255, 107, 74, 0.5);
+}
+
+.event-date {
+  font-family: var(--typeface-data);
+  font-size: 0.75rem;
+  color: var(--signal);
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.event-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--luminance);
+  margin-bottom: 0.4rem;
+}
+
+.event-detail {
+  font-size: 0.85rem;
+  color: var(--dimmed);
+  line-height: 1.5;
+}
+
+/* =========================================================
+   RISK ASSESSMENT
+========================================================= */
+
+.risk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-m);
+}
+
+.risk-card {
+  background: var(--depth-2);
+  padding: var(--space-m);
+  border-radius: 6px;
+  border-left: 3px solid var(--orbit-line);
+}
+
+.risk-card.elevated {
+  border-left-color: var(--alert-warm);
+}
+
+.risk-card.nominal {
+  border-left-color: var(--success);
+}
+
+.risk-card.monitoring {
+  border-left-color: var(--caution);
+}
+
+.risk-type {
+  font-size: 0.75rem;
+  color: var(--dimmed);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.risk-value {
+  font-family: var(--typeface-data);
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--luminance);
+  margin-bottom: 0.4rem;
+}
+
+.risk-explanation {
+  font-size: 0.82rem;
+  color: var(--dimmed);
+  line-height: 1.5;
+}
+
+/* =========================================================
+   OBSERVATION DATA
+========================================================= */
+
+.observation-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+}
+
+.observation-item {
+  background: var(--depth-2);
+  padding: var(--space-s);
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.obs-info {
+  flex: 1;
+}
+
+.obs-date {
+  font-family: var(--typeface-data);
+  font-size: 0.75rem;
+  color: var(--signal);
+  margin-bottom: 0.3rem;
+}
+
+.obs-facility {
+  font-size: 0.88rem;
+  color: var(--luminance);
+}
+
+.obs-quality {
+  font-size: 0.72rem;
+  color: var(--dimmed);
+  padding: 0.25rem 0.6rem;
+  background: var(--depth-1);
+  border-radius: 3px;
+}
+
+/* =========================================================
+   PHYSICAL CHARACTERISTICS
+========================================================= */
+
+.char-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-m);
+}
+
+.char-box {
+  text-align: center;
+  padding: var(--space-m);
+  background: var(--depth-2);
+  border-radius: 6px;
+}
+
+.char-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-s);
+}
+
+.char-label {
+  font-size: 0.75rem;
+  color: var(--dimmed);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+}
+
+.char-value {
+  font-family: var(--typeface-data);
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--luminance);
+}
+
+.char-range {
+  font-size: 0.75rem;
+  color: var(--dimmed);
+  margin-top: 0.3rem;
+}
+
+/* =========================================================
+   VISUALIZATION PLACEHOLDER
+========================================================= */
+
+.viz-container {
+  background: var(--depth-2);
+  border-radius: 8px;
+  padding: var(--space-l);
+  text-align: center;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed var(--orbit-line);
+}
+
+.viz-icon {
+  font-size: 4rem;
+  margin-bottom: var(--space-m);
+  opacity: 0.3;
+}
+
+.viz-message {
+  color: var(--dimmed);
+  max-width: 40ch;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1024px) {
+  .object-hero {
+    grid-template-columns: 1fr;
+  }
+  
+  .hero-aside {
+    position: static;
+    margin-top: var(--space-l);
+  }
+  
+  .section-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .content-section.offset {
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .designation-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .param-table {
+    grid-template-columns: 1fr;
+  }
+  
+  .risk-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .char-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+  
+  .observation-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<nav class="nav-ribbon">
+  <div class="nav-inner">
+    <div class="breadcrumb">
+      <a href="index.html">DhruvaNetra</a>
+      <span class="breadcrumb-separator">/</span>
+      <a href="dashboard.html">Dashboard</a>
+      <span class="breadcrumb-separator">/</span>
+      <span class="current-object">2024 MX1</span>
+    </div>
+    <a href="dashboard.html" class="back-link">← Return to Dashboard</a>
+  </div>
+</nav>
+
+<section class="object-hero">
+  <div class="hero-primary">
+    <div class="designation-header">
+      <h1 class="designation-title">2024 MX1</h1>
+      <span class="hazard-indicator alert">Potentially Hazardous</span>
+    </div>
+    
+    <p class="object-summary">
+      Apollo-class near-Earth asteroid with an eccentric orbit bringing it into proximity with Earth's orbital path. Current trajectory indicates a close approach within 0.05 astronomical units. Continuous monitoring active.
+    </p>
+    
+    <div class="quick-actions">
+      <button class="action-btn primary">Add to Watch List</button>
+      <button class="action-btn">Set Alert Parameters</button>
+      <button class="action-btn">Export Data</button>
+    </div>
+  </div>
+  
+  <aside class="hero-aside">
+    <div class="aside-label">Critical Parameters</div>
+    <div class="critical-metrics">
+      <div class="metric-display">
+        <div class="metric-label">Next Close Approach</div>
+        <div class="metric-primary">Feb 14, 2026</div>
+        <div class="metric-secondary">19:47:23 UTC (7 days)</div>
+      </div>
+      <div class="metric-display">
+        <div class="metric-label">Miss Distance</div>
+        <div class="metric-primary">0.047 AU</div>
+        <div class="metric-secondary">7.03 million km</div>
+      </div>
+      <div class="metric-display">
+        <div class="metric-label">Relative Velocity</div>
+        <div class="metric-primary">24.3 km/s</div>
+        <div class="metric-secondary">87,480 km/h</div>
+      </div>
+      <div class="metric-display">
+        <div class="metric-label">Estimated Diameter</div>
+        <div class="metric-primary">340 m</div>
+        <div class="metric-secondary">280 - 410 m range</div>
+      </div>
+    </div>
+  </aside>
+</section>
+
+<div class="content-wrapper">
+  
+  <div class="section-grid">
+    
+    <section class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Orbital Elements</h2>
+        <span class="section-badge">Epoch: 2026-Feb-05</span>
+      </div>
+      <div class="param-table">
+        <div class="param-row">
+          <span class="param-name">Semi-major Axis</span>
+          <span class="param-value">1.42 AU</span>
+        </div>
+        <div class="param-row">
+          <span class="param-name">Eccentricity</span>
+          <span class="param-value">0.487</span>
+        </div>
+        <div class="param-row">
+          <span class="param-name">Inclination</span>
+          <span class="param-value">12.4°</span>
+        </div>
+        <div class="param-row">
+          <span class="param-name">Perihelion</span>
+          <span class="param-value">0.729 AU</span>
+        </div>
+        <div class="param-row">
+          <span class="param-name">Aphelion</span>
+          <span class="param-value">2.11 AU</span>
+        </div>
+        <div class="param-row">
+          <span class="param-name">Orbital Period</span>
+          <span class="param-value">618 days</span>
+        </div>
+        <div class="param-row">
+          <span class="param-name">Asc. Node</span>
+          <span class="param-value">247.8°</span>
+        </div>
+        <div class="param-row">
+          <span class="param-name">Arg. Perihelion</span>
+          <span class="param-value">156.3°</span>
+        </div>
+      </div>
+    </section>
+    
+    <section class="content-section offset">
+      <div class="section-header">
+        <h2 class="section-title">Approach Timeline</h2>
+      </div>
+      <div class="timeline">
+        <div class="timeline-event past">
+          <div class="event-date">Jan 28, 2026</div>
+          <div class="event-title">Entered Observation Window</div>
+          <div class="event-detail">Object became observable from Earth-based telescopes. Initial position confirmed.</div>
+        </div>
+        <div class="timeline-event past">
+          <div class="event-date">Feb 03, 2026</div>
+          <div class="event-title">Trajectory Refinement</div>
+          <div class="event-detail">Updated orbital elements based on additional observations. Miss distance confirmed at 0.047 AU.</div>
+        </div>
+        <div class="timeline-event current">
+          <div class="event-date">Feb 07, 2026</div>
+          <div class="event-title">Active Monitoring Phase</div>
+          <div class="event-detail">Continuous tracking in progress. Next data update in 4 hours.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="event-date">Feb 14, 2026</div>
+          <div class="event-title">Closest Approach</div>
+          <div class="event-detail">Object reaches minimum distance from Earth. High-precision measurements scheduled.</div>
+        </div>
+        <div class="timeline-event">
+          <div class="event-date">Feb 22, 2026</div>
+          <div class="event-title">Post-Encounter Analysis</div>
+          <div class="event-detail">Final orbit determination and assessment of any perturbations from Earth's gravity.</div>
+        </div>
+      </div>
+    </section>
+    
+  </div>
+  
+  <section class="content-section wide">
+    <div class="section-header">
+      <h2 class="section-title">Risk Assessment</h2>
+      <span class="section-badge">Updated 2h ago</span>
+    </div>
+    <div class="risk-grid">
+      <div class="risk-card elevated">
+        <div class="risk-type">Impact Probability</div>
+        <div class="risk-value">0.000%</div>
+        <div class="risk-explanation">No impact threat for this approach. Trajectory well-characterized with high confidence.</div>
+      </div>
+      <div class="risk-card monitoring">
+        <div class="risk-type">Torino Scale</div>
+        <div class="risk-value">0</div>
+        <div class="risk-explanation">No unusual level of danger. Routine discovery with well-understood trajectory.</div>
+      </div>
+      <div class="risk-card nominal">
+        <div class="risk-type">Palermo Scale</div>
+        <div class="risk-value">-6.2</div>
+        <div class="risk-explanation">Risk significantly below background level. No concern for foreseeable future approaches.</div>
+      </div>
+      <div class="risk-card monitoring">
+        <div class="risk-type">JPL Sentry Status</div>
+        <div class="risk-value">None</div>
+        <div class="risk-explanation">Not listed in impact monitoring system. No potential Earth impacts detected in next 100 years.</div>
+      </div>
+    </div>
+  </section>
+  
+  <div class="section-grid">
+    
+    <section class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Physical Characteristics</h2>
+      </div>
+      <div class="char-grid">
+        <div class="char-box">
+          <div class="char-icon">◐</div>
+          <div class="char-label">Absolute Magnitude</div>
+          <div class="char-value">19.8</div>
+        </div>
+        <div class="char-box">
+          <div class="char-icon">⬤</div>
+          <div class="char-label">Albedo</div>
+          <div class="char-value">0.14</div>
+          <div class="char-range">(estimated)</div>
+        </div>
+        <div class="char-box">
+          <div class="char-icon">↻</div>
+          <div class="char-label">Rotation Period</div>
+          <div class="char-value">4.7 h</div>
+          <div class="char-range">±0.3h uncertainty</div>
+        </div>
+        <div class="char-box">
+          <div class="char-icon">⚛</div>
+          <div class="char-label">Spectral Type</div>
+          <div class="char-value">S-type</div>
+          <div class="char-range">Stony composition</div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="content-section offset">
+      <div class="section-header">
+        <h2 class="section-title">Recent Observations</h2>
+      </div>
+      <div class="observation-list">
+        <div class="observation-item">
+          <div class="obs-info">
+            <div class="obs-date">2026-02-07 08:12 UTC</div>
+            <div class="obs-facility">Pan-STARRS 1, Haleakalā</div>
+          </div>
+          <div class="obs-quality">Excellent</div>
+        </div>
+        <div class="observation-item">
+          <div class="obs-info">
+            <div class="obs-date">2026-02-06 22:47 UTC</div>
+            <div class="obs-facility">Catalina Sky Survey</div>
+          </div>
+          <div class="obs-quality">Good</div>
+        </div>
+        <div class="observation-item">
+          <div class="obs-info">
+            <div class="obs-date">2026-02-05 19:33 UTC</div>
+            <div class="obs-facility">ESA Optical Ground Station</div>
+          </div>
+          <div class="obs-quality">Good</div>
+        </div>
+        <div class="observation-item">
+          <div class="obs-info">
+            <div class="obs-date">2026-02-04 11:58 UTC</div>
+            <div class="obs-facility">Mt. Lemmon Survey</div>
+          </div>
+          <div class="obs-quality">Fair</div>
+        </div>
+      </div>
+    </section>
+    
+  </div>
+  
+  <section class="content-section wide">
+    <div class="section-header">
+      <h2 class="section-title">Orbit Visualization</h2>
+      <span class="section-badge">3D View (Coming Soon)</span>
+    </div>
+    <div class="viz-container">
+      <div class="viz-icon">⊕</div>
+      <div class="viz-message">
+        Interactive 3D orbital visualization will be available here. This feature uses Three.js to render the object's trajectory relative to Earth's orbit, allowing you to explore the approach geometry from any angle.
+      </div>
+    </div>
+  </section>
+  
+  <section class="content-section wide">
+    <div class="section-header">
+      <h2 class="section-title">Technical Notes</h2>
+    </div>
+    <p style="color: var(--dimmed); line-height: 1.7; margin-bottom: var(--space-s);">
+      Object 2024 MX1 was discovered on March 18, 2024 by the Catalina Sky Survey. It belongs to the Apollo group of near-Earth asteroids, characterized by orbits that cross Earth's orbital path. The object's semi-major axis of 1.42 AU and moderate eccentricity place it in a resonant relationship with Earth, leading to periodic close approaches roughly every 3-4 years.
+    </p>
+    <p style="color: var(--dimmed); line-height: 1.7; margin-bottom: var(--space-s);">
+      Spectroscopic observations suggest an S-type composition, indicating a stony asteroid likely composed of silicate minerals and metals. The rotation period of approximately 4.7 hours is within the typical range for objects of this size. Physical characterization efforts continue with each apparition.
+    </p>
+    <p style="color: var(--dimmed); line-height: 1.7;">
+      While classified as potentially hazardous due to its size and orbital characteristics, current trajectory calculations show no impact risk for at least the next century. The object serves as an important test case for planetary defense observation capabilities and orbital prediction methodologies.
+    </p>
+  </section>
+
+</div>
+
+<script>
+// Add to watch list functionality
+document.querySelector('.action-btn.primary').addEventListener('click', function() {
+  if (this.textContent === 'Add to Watch List') {
+    this.textContent = '✓ Added to Watch List';
+    this.style.background = 'var(--success)';
+    this.style.borderColor = 'var(--success)';
+    setTimeout(() => {
+      this.textContent = 'Remove from Watch List';
+      this.style.background = 'var(--signal)';
+      this.style.borderColor = 'var(--signal)';
+    }, 2000);
+  } else {
+    this.textContent = 'Add to Watch List';
+  }
+});
+
+// Export data functionality
+document.querySelectorAll('.action-btn')[2].addEventListener('click', function() {
+  alert('Export functionality: CSV/JSON/XML formats available. This would trigger a download in the production version.');
+});
+</script>
+
+</body>
+</html>
