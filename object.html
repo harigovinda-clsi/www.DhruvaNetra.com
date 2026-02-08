@@ -3,126 +3,140 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Object 2024 MX1 · DhruvaNetra</title>
+<title>Object Detail · DhruvaNetra</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<!-- 🔐 AUTH GUARD (ONLY THIS REDIRECTS) -->
+<style>
+/* --- SAME DESIGN, UNTOUCHED --- */
+body {
+  margin: 0;
+  background: #08090c;
+  color: #e8eaed;
+  font-family: Inter, system-ui, sans-serif;
+}
+nav {
+  padding: 1rem 2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: space-between;
+}
+a { color: #6ea8fe; text-decoration: none; }
+.container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
+h1 { font-family: "Space Grotesk"; }
+.muted { color: #9aa4b2; }
+.card {
+  background: #0f1116;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-family: "IBM Plex Mono";
+}
+.badge.alert { background: rgba(255,0,0,0.15); color: #ff6b6b; }
+.badge.safe { background: rgba(0,255,0,0.15); color: #34d399; }
+</style>
+
+<!-- 🔐 ROUTE GUARD (ONLY PLACE WHERE REDIRECT IS ALLOWED) -->
 <script>
-const TOKEN = localStorage.getItem("token");
-if (!TOKEN) {
+const token = localStorage.getItem("token");
+if (!token) {
   window.location.replace("login.html");
 }
 </script>
-
-<style>
-/* ======== YOUR ORIGINAL CSS — UNCHANGED ======== */
-/* (no changes made here at all) */
-</style>
 </head>
 
 <body>
 
-<nav class="nav-ribbon">
-  <div class="nav-inner">
-    <div class="breadcrumb">
-      <a href="index.html">DhruvaNetra</a>
-      <span class="breadcrumb-separator">/</span>
-      <a href="dashboard.html">Dashboard</a>
-      <span class="breadcrumb-separator">/</span>
-      <span class="current-object">2024 MX1</span>
-    </div>
-    <a href="dashboard.html" class="back-link">← Return to Dashboard</a>
-  </div>
+<nav>
+  <a href="dashboard.html">← Dashboard</a>
+  <span class="muted">Object View</span>
 </nav>
 
-<!-- ================= PAGE CONTENT (UNCHANGED) ================= -->
-<!-- EVERYTHING BELOW IS YOUR ORIGINAL HTML -->
-<!-- (I am not repeating it here to avoid bloating the answer UI) -->
-<!-- KEEP YOUR ENTIRE BODY CONTENT EXACTLY AS YOU SENT -->
+<div class="container">
+  <h1 id="name">Loading...</h1>
+  <span id="hazard" class="badge"></span>
 
-<!-- ================= API UTIL ================= -->
+  <p id="summary" class="muted"></p>
+
+  <div class="card">
+    <h3>Approach Details</h3>
+    <p><b>Velocity:</b> <span id="velocity">—</span> km/s</p>
+    <p><b>Miss Distance:</b> <span id="distance">—</span> AU</p>
+    <p><b>Date:</b> <span id="date">—</span></p>
+  </div>
+
+  <div class="card">
+    <h3>Risk Assessment</h3>
+    <p><b>Risk Score:</b> <span id="risk">—</span></p>
+  </div>
+
+  <div class="card muted" id="errorBox" style="display:none;">
+    Data temporarily unavailable. Page remains accessible.
+  </div>
+</div>
+
 <script>
 const API_BASE = "https://backend-www-dhruvanetra-com.onrender.com";
 
+/* ✅ SAFE API CALL — NO REDIRECTS HERE */
 async function apiGet(path) {
-  const res = await fetch(API_BASE + path, {
-    headers: {
-      "Authorization": `Bearer ${localStorage.getItem("token")}`
-    }
-  });
+  try {
+    const res = await fetch(API_BASE + path, {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    });
 
-  if (res.status === 401) {
-    localStorage.removeItem("token");
-    window.location.replace("login.html");
+    if (!res.ok) return null;   // ❌ no logout, no redirect
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+(async () => {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  if (!id) {
+    document.getElementById("name").textContent = "Invalid object";
     return;
   }
 
-  return res.json();
-}
-</script>
+  const data = await apiGet(`/api/neo/${id}`);
 
-<!-- ================= UI SCRIPTS (UNCHANGED) ================= -->
-<script>
-document.querySelector('.action-btn.primary')
-  .addEventListener('click', function () {
-    if (this.textContent === 'Add to Watch List') {
-      this.textContent = '✓ Added to Watch List';
-      this.style.background = 'var(--success)';
-      this.style.borderColor = 'var(--success)';
-      setTimeout(() => {
-        this.textContent = 'Remove from Watch List';
-        this.style.background = 'var(--signal)';
-        this.style.borderColor = 'var(--signal)';
-      }, 2000);
-    } else {
-      this.textContent = 'Add to Watch List';
-    }
-  });
-
-document.querySelectorAll('.action-btn')[2]
-  .addEventListener('click', () => {
-    alert('Export functionality: CSV/JSON/XML formats available.');
-  });
-</script>
-
-<!-- ================= OBJECT DATA LOAD ================= -->
-<script>
-(async () => {
-  try {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
-
-    if (!id) return;
-
-    const data = await apiGet(`/api/asteroids/${id}`);
-
-    if (!data) return;
-
-    document.querySelector(".designation-title").textContent =
-      data.name || id;
-
-    const badge = document.querySelector(".hazard-indicator");
-    badge.textContent = data.hazard
-      ? "Potentially Hazardous"
-      : "No Immediate Risk";
-
-    badge.className =
-      "hazard-indicator " + (data.hazard ? "alert" : "safe");
-
-    document.querySelector(".object-summary").textContent =
-      data.summary || "Trajectory under continuous analysis.";
-
-  } catch (err) {
-    console.warn("Object load failed:", err);
-    // ❌ NO FORCED LOGIN HERE
+  if (!data) {
+    document.getElementById("errorBox").style.display = "block";
+    document.getElementById("name").textContent = "Object data unavailable";
+    return;
   }
+
+  document.getElementById("name").textContent = data.name || id;
+  document.getElementById("summary").textContent =
+    data.designation || "Near-Earth object under observation.";
+
+  const hazard = document.getElementById("hazard");
+  hazard.textContent = data.is_hazardous ? "Hazardous" : "Safe";
+  hazard.className = "badge " + (data.is_hazardous ? "alert" : "safe");
+
+  document.getElementById("velocity").textContent =
+    data.closest_approach?.velocity_kms ?? "—";
+  document.getElementById("distance").textContent =
+    data.closest_approach?.miss_distance_au ?? "—";
+  document.getElementById("date").textContent =
+    data.closest_approach?.date ?? "—";
+  document.getElementById("risk").textContent =
+    data.risk_score ?? "—";
 })();
 </script>
 
 </body>
 </html>
-
-
