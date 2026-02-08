@@ -58,15 +58,10 @@ button {
   font-weight: 500;
   cursor: pointer;
 }
-.toggle {
+.note {
   margin-top: 1rem;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--muted);
-}
-.toggle a {
-  color: var(--accent);
-  cursor: pointer;
-  text-decoration: none;
 }
 .error {
   color: #ff6b6b;
@@ -79,21 +74,18 @@ button {
 
 <body>
   <div class="auth-box">
-    <h1 id="title">Login</h1>
+    <h1>Login</h1>
 
     <label>Email</label>
-    <input id="email" type="email" placeholder="you@example.com" />
+    <input id="email" type="email" placeholder="any@email.com" />
 
     <label>Password</label>
-    <input id="password" type="password" placeholder="••••••••" />
+    <input value="password" disabled />
 
-    <button onclick="submitAuth()">Continue</button>
+    <button onclick="login()">Continue</button>
 
-    <div class="toggle">
-      New here?
-      <a onclick="setMode('register')">Register</a>
-      &nbsp;|&nbsp;
-      <a onclick="setMode('login')">Back to Login</a>
+    <div class="note">
+      Demo mode enabled · Password fixed as <b>password</b>
     </div>
 
     <div id="error" class="error"></div>
@@ -101,60 +93,55 @@ button {
 
 <script>
 const API_BASE = "https://backend-www-dhruvanetra-com.onrender.com";
-let MODE = "login";
+const FIXED_PASSWORD = "password";
 
-function setMode(mode) {
-  MODE = mode;
-  document.getElementById("title").textContent =
-    mode === "login" ? "Login" : "Create Account";
-}
-
-async function submitAuth() {
+async function login() {
   const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
   const errorBox = document.getElementById("error");
   errorBox.style.display = "none";
 
-  if (!email || !password) {
-    errorBox.textContent = "Please enter email and password";
+  if (!email) {
+    errorBox.textContent = "Enter any email to continue";
     errorBox.style.display = "block";
     return;
   }
 
-  const payload =
-    MODE === "login"
-      ? { email, password }
-      : {
-          email,
-          password,
-          username: email.split("@")[0]
-        };
+  // try login first
+  let res = await fetch(API_BASE + "/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email,
+      password: FIXED_PASSWORD
+    })
+  });
 
-  const endpoint =
-    MODE === "login" ? "/api/auth/login" : "/api/auth/register";
-
-  try {
-    const res = await fetch(API_BASE + endpoint, {
+  // if user does not exist → auto register
+  if (!res.ok) {
+    res = await fetch(API_BASE + "/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        email,
+        password: FIXED_PASSWORD,
+        username: email.split("@")[0]
+      })
     });
-
-    if (!res.ok) throw new Error();
-
-    const data = await res.json();
-    localStorage.setItem("token", data.access_token);
-
-    window.location.href = "dashboard.html";
-  } catch {
-    errorBox.textContent = "Authentication failed. Check credentials.";
-    errorBox.style.display = "block";
   }
-}
-</script>
 
-<script>
-// Redirect ONLY if token exists
+  if (!res.ok) {
+    errorBox.textContent = "Login failed. Try another email.";
+    errorBox.style.display = "block";
+    return;
+  }
+
+  const data = await res.json();
+  localStorage.setItem("token", data.access_token);
+
+  window.location.href = "dashboard.html";
+}
+
+// already logged in → skip login
 if (localStorage.getItem("token")) {
   window.location.href = "dashboard.html";
 }
