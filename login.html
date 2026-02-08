@@ -15,11 +15,9 @@
   --fg: #e6e8eb;
   --muted: #9aa4b2;
   --accent: #6ea8fe;
-
   --heading: "Space Grotesk", sans-serif;
   --body: "Inter", sans-serif;
 }
-
 body {
   margin: 0;
   background: var(--bg);
@@ -29,24 +27,20 @@ body {
   place-items: center;
   min-height: 100vh;
 }
-
 .auth-box {
   width: min(380px, 90%);
 }
-
 h1 {
   font-family: var(--heading);
   font-weight: 600;
   margin-bottom: 1.5rem;
 }
-
 label {
   display: block;
   font-size: 0.85rem;
   color: var(--muted);
   margin-bottom: 0.25rem;
 }
-
 input {
   width: 100%;
   padding: 0.6rem;
@@ -55,7 +49,6 @@ input {
   border: 1px solid rgba(255,255,255,0.15);
   color: var(--fg);
 }
-
 button {
   width: 100%;
   padding: 0.6rem;
@@ -65,17 +58,21 @@ button {
   font-weight: 500;
   cursor: pointer;
 }
-
 .toggle {
   margin-top: 1rem;
   font-size: 0.8rem;
   color: var(--muted);
 }
-
 .toggle a {
   color: var(--accent);
   cursor: pointer;
   text-decoration: none;
+}
+.error {
+  color: #ff6b6b;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  display: none;
 }
 </style>
 </head>
@@ -96,13 +93,15 @@ button {
       New here?
       <a onclick="setMode('register')">Register</a>
       &nbsp;|&nbsp;
-      <span>Forgot password</span>
+      <a onclick="setMode('login')">Back to Login</a>
     </div>
+
+    <div id="error" class="error"></div>
   </div>
 
 <script>
 const API_BASE = "https://backend-www-dhruvanetra-com.onrender.com";
-let MODE = "login"; // login | register
+let MODE = "login";
 
 function setMode(mode) {
   MODE = mode;
@@ -111,13 +110,25 @@ function setMode(mode) {
 }
 
 async function submitAuth() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const errorBox = document.getElementById("error");
+  errorBox.style.display = "none";
 
   if (!email || !password) {
-    alert("Please enter email and password");
+    errorBox.textContent = "Please enter email and password";
+    errorBox.style.display = "block";
     return;
   }
+
+  const payload =
+    MODE === "login"
+      ? { email, password }
+      : {
+          email,
+          password,
+          username: email.split("@")[0]
+        };
 
   const endpoint =
     MODE === "login" ? "/api/auth/login" : "/api/auth/register";
@@ -126,28 +137,28 @@ async function submitAuth() {
     const res = await fetch(API_BASE + endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify(payload)
     });
 
-    if (!res.ok) throw new Error("Auth failed");
+    if (!res.ok) throw new Error();
 
     const data = await res.json();
     localStorage.setItem("token", data.access_token);
 
     window.location.href = "dashboard.html";
-  } catch (err) {
-    alert("Authentication failed");
+  } catch {
+    errorBox.textContent = "Authentication failed. Check credentials.";
+    errorBox.style.display = "block";
   }
 }
 </script>
 
 <script>
+// Redirect ONLY if token exists
 if (localStorage.getItem("token")) {
   window.location.href = "dashboard.html";
 }
 </script>
+
 </body>
 </html>
-
-
-
